@@ -1,3 +1,4 @@
+//function handles all request that are not allowed
 function methodNotAllowed(request, response, next) {
   next({
     status: 405,

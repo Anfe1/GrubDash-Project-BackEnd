@@ -3,6 +3,8 @@ const controller = require("./dishes.controller");
 const methodNotAllowed = require("../errors/methodNotAllowed");
 
 // TODO: Implement the /dishes routes needed to make the tests pass
+
+//Routers that will handle all the request depending on the route
 router
   .route("/:dishId")
   .get(controller.read)
