@@ -10,7 +10,7 @@ const nextId = require("../utils/nextId");
 // TODO: Implement the /dishes handlers needed to make the tests pass
 
 //Middleware functions
-const dishExists = (req, res, next) => {
+function dishExists(req, res, next) {
   const { dishId } = req.params;
   const foundDish = dishes.find((dish) => dishId === dish.id);
   if (foundDish) {
@@ -21,10 +21,10 @@ const dishExists = (req, res, next) => {
     status: 404,
     message: `Dish id not found: ${dishId}`,
   });
-};
+}
 
 //checks for existance of property
-const hasBodyData = (property) => {
+function hasBodyData(property) {
   return function (req, res, next) {
     const { data = {} } = req.body;
     if (data[property]) {
@@ -35,10 +35,10 @@ const hasBodyData = (property) => {
       message: `Must include a ${property}`,
     });
   };
-};
+}
 
 //Price Validator
-const validatePrice = (req, res, next) => {
+function validatePrice(req, res, next) {
   const { data: { price } = {} } = req.body;
   if (!price || price <= 0 || !Number.isInteger(price)) {
     next({
@@ -47,10 +47,10 @@ const validatePrice = (req, res, next) => {
     });
   }
   next();
-};
+}
 
 //Dish id/route validator
-const dishRouteValidator = (req, res, next) => {
+function dishRouteValidator(req, res, next) {
   const { data: { id } = {} } = req.body;
   const dishId = req.params.dishId;
 
@@ -61,18 +61,18 @@ const dishRouteValidator = (req, res, next) => {
     });
   }
   next();
-};
+}
 
 //handlers
-const list = (req, res) => {
+function list(req, res) {
   res.status(200).json({ data: dishes });
-};
+}
 
-const read = (req, res) => {
+function read(req, res) {
   res.status(200).json({ data: res.locals.dish });
-};
+}
 
-const create = (req, res) => {
+function create(req, res) {
   const { data: { name, description, price, image_url } = {} } = req.body;
   const newDish = {
     id: nextId(),
@@ -83,9 +83,9 @@ const create = (req, res) => {
   };
   dishes.push(newDish);
   res.status(201).json({ data: newDish });
-};
+}
 
-const update = (req, res) => {
+function update(req, res) {
   const dish = res.locals.dish;
   const { data: { name, description, price, image_url } = {} } = req.body;
 
@@ -95,7 +95,7 @@ const update = (req, res) => {
   dish.image_url = image_url;
 
   res.status(200).json({ data: dish });
-};
+}
 
 module.exports = {
   create: [

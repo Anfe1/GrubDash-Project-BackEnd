@@ -9,10 +9,13 @@ const nextId = require("../utils/nextId");
 // TODO: Implement the /orders handlers needed to make the tests pass
 
 //Middleware functions
-const orderExists = (req, res, next) => {
+
+//Checks if the order exists by searching for the id of the order.
+function orderExists(req, res, next) {
   const { orderId } = req.params;
   const foundOrder = orders.find((order) => orderId === order.id);
   if (foundOrder) {
+    //if the order is found then move to the next function
     res.locals.order = foundOrder;
     next();
   }
@@ -20,9 +23,9 @@ const orderExists = (req, res, next) => {
     status: 404,
     message: `Order id not found: ${orderId}`,
   });
-};
+}
 
-const hasBodyData = (property) => {
+function hasBodyData(property) {
   return function (req, res, next) {
     const { data = {} } = req.body;
     if (data[property]) {
@@ -33,9 +36,9 @@ const hasBodyData = (property) => {
       message: `Must include a ${property}`,
     });
   };
-};
+}
 
-const dishesValidator = (req, res, next) => {
+function dishesValidator(req, res, next) {
   const { data: { dishes } = {} } = req.body;
   if (!Array.isArray(dishes) || dishes.length === 0) {
     next({
@@ -44,9 +47,9 @@ const dishesValidator = (req, res, next) => {
     });
   }
   next();
-};
+}
 
-const dishQuantityValidator = (req, res, next) => {
+function dishQuantityValidator(req, res, next) {
   const { data: { dishes } = {} } = req.body;
 
   dishes.forEach((dish) => {
@@ -59,9 +62,9 @@ const dishQuantityValidator = (req, res, next) => {
     }
   });
   next();
-};
+}
 
-const orderRouteValidator = (req, res, next) => {
+function orderRouteValidator(req, res, next) {
   const { data: { id } = {} } = req.body;
   const orderId = res.locals.order.id;
 
@@ -72,9 +75,9 @@ const orderRouteValidator = (req, res, next) => {
     });
   }
   next();
-};
+}
 
-const statusValidator = (req, res, next) => {
+function statusValidator(req, res, next) {
   const { data: { status } = {} } = req.body;
 
   if (status === "invalid" || !status || status.length === 0) {
@@ -85,18 +88,18 @@ const statusValidator = (req, res, next) => {
     });
   }
   next();
-};
+}
 
-//handlers
-const list = (req, res) => {
+//handlers, list, read, create, update, delete
+function list(req, res) {
   res.status(200).json({ data: orders });
-};
+}
 
-const read = (req, res) => {
+function read(req, res) {
   res.status(200).json({ data: res.locals.order });
-};
+}
 
-const create = (req, res, next) => {
+function create(req, res, next) {
   const { data: { deliverTo, mobileNumber, dishes } = {} } = req.body;
   const newOrder = {
     id: nextId(),
@@ -106,9 +109,9 @@ const create = (req, res, next) => {
   };
   orders.push(newOrder);
   res.status(201).json({ data: newOrder });
-};
+}
 
-const update = (req, res, next) => {
+function update(req, res, next) {
   const order = res.locals.order;
   const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
 
@@ -118,9 +121,9 @@ const update = (req, res, next) => {
   order.dishes = dishes;
 
   res.status(200).json({ data: order });
-};
+}
 
-const destroy = (req, res, next) => {
+function destroy(req, res, next) {
   const { orderId } = req.params;
   const foundOrder = orders.find((order) => order.id === orderId);
   const { data: { id, deliverTo, mobileNumber, status, dishes } = {} } =
@@ -134,7 +137,7 @@ const destroy = (req, res, next) => {
     status: 400,
     message: `order cannot be deleted unless order status = 'pending'`,
   });
-};
+}
 
 module.exports = {
   list,
